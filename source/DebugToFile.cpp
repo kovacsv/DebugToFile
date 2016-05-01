@@ -175,7 +175,7 @@ private:
 int wmain (int argc, wchar_t* argv[])
 {
 	if (argc < 3) {
-		std::cout << "Usage: DebugMonitor.exe [DebugLogFileName] [ApplicationName] <ApplicationArguments>" << std::endl;
+		std::cout << "Usage: DebugToFile.exe [DebugLogFileName] [ApplicationName] <ApplicationArguments>" << std::endl;
 		return 1;
 	}
 
