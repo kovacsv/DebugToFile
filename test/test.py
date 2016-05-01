@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 def WriteTitle (title):
 	print '--- ' + title + ' ---'
@@ -9,20 +10,40 @@ def GetFileLines (fileName):
 	file.close ()
 	return lines
 
+def GetCommandOutput (command):
+	process = subprocess.Popen (command, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
+	out, err = process.communicate ()
+	return process.returncode, out, err
+	
 currentPath = os.path.dirname (os.path.abspath (__file__))
 os.chdir (currentPath)
 
 debugToFilePath = os.path.join ('..', 'solution', 'x64', 'Debug', 'DebugToFile.exe')
 exampleProcessPath = os.path.join ('..', 'solution', 'x64', 'Debug', 'ExampleProcess.exe')
 resultFilePath = 'test.txt'
+success = True
 
 WriteTitle ('Run process standalone')
-os.system (exampleProcessPath)
+ret, out, err = GetCommandOutput (exampleProcessPath)
+print out
+
+WriteTitle ('Run DebugToFile without parameters')
+ret, out, err = GetCommandOutput (debugToFilePath)
+print out
+if out != 'Usage: DebugToFile.exe [DebugLogFileName] [ApplicationName] <ApplicationArguments>\r\n':
+	success = False
+
+WriteTitle ('Run DebugToFile with invalid process')
+ret, out, err = GetCommandOutput (debugToFilePath + ' NotExisting.exe ' + resultFilePath + ' NotExisting.exe')
+print out
+if out != 'Error: Failed to start application\r\n':
+	success = False
 
 WriteTitle ('Run process with DebugToFile')
-os.system (debugToFilePath + ' ' + resultFilePath + ' ' + exampleProcessPath)
+ret, out, err = GetCommandOutput (debugToFilePath + ' ' + resultFilePath + ' ' + exampleProcessPath)
+print out
+
 lines = GetFileLines (resultFilePath)
-success = True
 if lines[0] != exampleProcessPath + '\n':
 	success = False
 for i in range (1, len (lines)):
@@ -31,9 +52,9 @@ for i in range (1, len (lines)):
 os.remove (resultFilePath)
 
 WriteTitle ('Run process with DebugToFile with parameters')
-os.system (debugToFilePath + ' ' + resultFilePath + ' ' + exampleProcessPath + ' -a -b -c')
+ret, out, err = GetCommandOutput (debugToFilePath + ' ' + resultFilePath + ' ' + exampleProcessPath + ' -a -b -c')
+print out
 lines = GetFileLines (resultFilePath)
-success = True
 if lines[0] != exampleProcessPath + '\n':
 	success = False
 if lines[1] != '-a\n':
