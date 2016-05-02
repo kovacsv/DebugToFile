@@ -202,6 +202,7 @@ int wmain (int argc, wchar_t* argv[])
 		return 1;
 	}
 
+	DWORD exitCode = 0;
 	if (processCreated) {
 		DebugFileWriter debugFileWriter (debugLogfileName, processInfo.dwProcessId);
 		DebugMonitor debugMonitor (&debugFileWriter);
@@ -210,11 +211,9 @@ int wmain (int argc, wchar_t* argv[])
 		WaitForSingleObject (processInfo.hProcess, INFINITE);
 		debugMonitor.Stop ();
 
+		GetExitCodeProcess (processInfo.hProcess, &exitCode);
 		CloseHandle (processInfo.hProcess);
 		CloseHandle (processInfo.hThread);
 	}
-
-	DWORD exitCode = 0;
-	GetExitCodeProcess (processInfo.hProcess, &exitCode);
 	return exitCode;
 }

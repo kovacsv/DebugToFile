@@ -29,5 +29,5 @@ int main (int argc, const char* argv[])
 		std::cout << "Lot of calculation: " << (float) (end - start) << std::endl;
 	}
 	
-	return 0;
+	return 1984;
 }
