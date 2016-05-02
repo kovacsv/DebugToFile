@@ -1,6 +1,6 @@
 # DebugToFile
 
-DebugToFile can write the debug output of any application to a text file.
+DebugToFile can write the debug output of any application to a text file. It captures all of the <code>OutputDebugString</code> messages.
 
 ## How to use?
 
