@@ -202,18 +202,18 @@ int wmain (int argc, wchar_t* argv[])
 		return 1;
 	}
 
+	DebugFileWriter debugFileWriter (debugLogfileName, processInfo.dwProcessId);
+	DebugMonitor debugMonitor (&debugFileWriter);
+
+	debugMonitor.Start ();
+	WaitForSingleObject (processInfo.hProcess, INFINITE);
+	debugMonitor.Stop ();
+
 	DWORD exitCode = 0;
-	if (processCreated) {
-		DebugFileWriter debugFileWriter (debugLogfileName, processInfo.dwProcessId);
-		DebugMonitor debugMonitor (&debugFileWriter);
+	GetExitCodeProcess (processInfo.hProcess, &exitCode);
 
-		debugMonitor.Start ();
-		WaitForSingleObject (processInfo.hProcess, INFINITE);
-		debugMonitor.Stop ();
+	CloseHandle (processInfo.hProcess);
+	CloseHandle (processInfo.hThread);
 
-		GetExitCodeProcess (processInfo.hProcess, &exitCode);
-		CloseHandle (processInfo.hProcess);
-		CloseHandle (processInfo.hThread);
-	}
 	return exitCode;
 }
